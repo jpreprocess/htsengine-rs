@@ -1,4 +1,7 @@
-use std::{ffi::{CString, CStr}, mem::MaybeUninit};
+use std::{
+    ffi::{CStr, CString},
+    mem::MaybeUninit,
+};
 
 pub struct HTSEngine {
     inner: htsengine_sys::HTS_Engine,
