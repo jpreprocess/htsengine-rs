@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 htsengine-sys={path = "../htsengine-sys"}
+thiserror = "1.0"
