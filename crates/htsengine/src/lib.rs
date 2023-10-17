@@ -1,8 +1,7 @@
-use std::{ffi::CString, mem::MaybeUninit};
+use std::{ffi::{CString, CStr}, mem::MaybeUninit};
 
 pub struct HTSEngine {
     inner: htsengine_sys::HTS_Engine,
-    model: Option<Vec<i8>>,
 }
 
 #[derive(PartialEq, Debug, thiserror::Error)]
@@ -26,26 +25,31 @@ impl HTSEngine {
             htsengine_sys::HTS_Engine_initialize(htsengine.as_mut_ptr());
             Self {
                 inner: htsengine.assume_init(),
-                model: None,
             }
         }
     }
-    pub fn load(&mut self, mut model: Vec<i8>) -> HTSEngineResult<()> {
-        let result =
-            unsafe { htsengine_sys::HTS_Engine_load(&mut self.inner, &mut model.as_mut_ptr(), 1) };
+    pub fn load(&mut self, model_paths: Vec<String>) -> HTSEngineResult<()> {
+        let mut paths: Vec<*mut i8> = model_paths
+            .into_iter()
+            .map(|l| CString::new(l).map(|l| l.into_raw()))
+            .collect::<Result<_, _>>()
+            .map_err(|_| HTSEngineError::CStringError)?;
+
+        let result = unsafe {
+            htsengine_sys::HTS_Engine_load(&mut self.inner, paths.as_mut_ptr(), paths.len())
+        };
         if result != 1 {
             return Err(HTSEngineError::LoadError);
         }
 
         let format = unsafe {
             let ptr = htsengine_sys::HTS_Engine_get_fullcontext_label_format(&mut self.inner);
-            CString::from_raw(ptr as *mut i8)
+            CStr::from_ptr(ptr)
         };
         if !matches!(format.to_str(), Ok("HTS_TTS_JPN")) {
             return Err(HTSEngineError::ModelTypeError);
         }
 
-        self.model = Some(model);
         Ok(())
     }
 
