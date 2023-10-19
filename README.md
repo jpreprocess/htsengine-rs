@@ -19,12 +19,12 @@ let result = engine
     .synthesize(fullcontext_label)?
     .into_iter()
     .map(|d| {
-        if *d < (i16::MIN as f64) {
+        if d < (i16::MIN as f64) {
             i16::MIN
-        } else if *d > (i16::MAX as f64) {
+        } else if d > (i16::MAX as f64) {
             i16::MAX
         } else {
-            *d as i16
+            d as i16
         }
     })
     .collect();
