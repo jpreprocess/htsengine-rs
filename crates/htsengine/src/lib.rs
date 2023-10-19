@@ -1,6 +1,7 @@
 use std::{
     ffi::{CStr, CString},
     mem::MaybeUninit,
+    os::raw::c_char,
 };
 
 pub struct HTSEngine {
@@ -32,7 +33,7 @@ impl HTSEngine {
         }
     }
     pub fn load(&mut self, model_paths: Vec<String>) -> HTSEngineResult<()> {
-        let mut paths: Vec<*mut i8> = model_paths
+        let mut paths: Vec<*mut c_char> = model_paths
             .into_iter()
             .map(|l| CString::new(l).map(|l| l.into_raw()))
             .collect::<Result<_, _>>()
@@ -88,7 +89,7 @@ impl HTSEngine {
     }
 
     pub fn synthesize(&mut self, fullcontext_labels: Vec<String>) -> HTSEngineResult<Vec<f64>> {
-        let mut labels: Vec<*mut i8> = fullcontext_labels
+        let mut labels: Vec<*mut c_char> = fullcontext_labels
             .into_iter()
             .map(|l| CString::new(l).map(|l| l.into_raw()))
             .collect::<Result<_, _>>()
