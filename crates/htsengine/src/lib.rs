@@ -20,6 +20,11 @@ pub enum HTSEngineError {
     SynthesisError,
 }
 
+#[inline]
+fn to_pointer<T>(i: &T) -> *const T {
+    i
+}
+
 type HTSEngineResult<T> = Result<T, HTSEngineError>;
 
 impl HTSEngine {
@@ -55,6 +60,65 @@ impl HTSEngine {
         }
 
         Ok(())
+    }
+
+    pub fn get_sampling_frequency(&self) -> usize {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_sampling_frequency(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
+    }
+    pub fn get_fperiod(&self) -> usize {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_fperiod(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
+    }
+    pub fn get_alpha(&self) -> f64 {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_alpha(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
+    }
+    pub fn get_beta(&self) -> f64 {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_beta(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
+    }
+    pub fn get_msd_threshold(&self, i: usize) -> f64 {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_msd_threshold(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine,
+                i,
+            )
+        }
+    }
+    pub fn get_gv_weight(&self, i: usize) -> f64 {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_gv_weight(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine,
+                i,
+            )
+        }
+    }
+    pub fn get_volume(&self) -> f64 {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_volume(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
+    }
+    pub fn get_audio_buff_size(&self) -> usize {
+        unsafe {
+            htsengine_sys::HTS_Engine_get_audio_buff_size(
+                to_pointer(&self.inner) as *mut htsengine_sys::HTS_Engine
+            )
+        }
     }
 
     pub fn set_sampling_frequency(&mut self, i: usize) {
